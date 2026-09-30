@@ -16,7 +16,7 @@
     <PluginsDir>$(ProfileDir)\plugins</PluginsDir>
     <!-- Real game DLLs, so private members fail at compile time instead of in game -->
     <GameManaged Condition="'$(GameManaged)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Risk of Rain 2\Risk of Rain 2_Data\Managed</GameManaged>
-    <ThunderstoreTeam>marshmelto</ThunderstoreTeam>
+    <ThunderstoreTeam>marshmeltoo</ThunderstoreTeam>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 {
   "name": "AnkletOfBloodlust",
   "version_number": "1.0.0",
-  "website_url": "https://github.com/pkonarad/AnkletOfBloodlust",
+  "website_url": "https://github.com/marshmelto/AnkletOfBloodlust",
   "description": "Adds a lunar item: kills build Bloodlust stacks for attack and movement speed, big hits cost half your stacks, and every copy lowers max health. More copies raise the stack cap.",
   "dependencies": [
     "bbepis-BepInExPack-5.4.2122",

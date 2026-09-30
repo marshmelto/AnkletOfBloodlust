@@ -5,7 +5,7 @@ Adds a new lunar item to Risk of Rain 2.
 <table>
 	<tr>
 		<td>
-			<img src="https://raw.githubusercontent.com/pkonarad/AnkletOfBloodlust/main/Assets/texAnkletOfBloodlustIcon.png" alt="Anklet of Bloodlust" width="192px"/>
+			<img src="https://raw.githubusercontent.com/marshmelto/AnkletOfBloodlust/main/Assets/texAnkletOfBloodlustIcon.png" alt="Anklet of Bloodlust" width="192px"/>
 		</td>
 		<td>
 			<b>Anklet of Bloodlust</b>
