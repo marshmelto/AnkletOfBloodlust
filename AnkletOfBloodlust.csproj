@@ -1,0 +1,105 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>AnkletOfBloodlust</AssemblyName>
+    <RootNamespace>AnkletOfBloodlust</RootNamespace>
+    <!-- Keep in sync with PluginVersion in AnkletOfBloodlustPlugin.cs and Thunderstore/manifest.json -->
+    <Version>1.0.0</Version>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <!-- Override either path on the command line, e.g. dotnet build -p:ProfileName=Default -->
+    <ProfileName Condition="'$(ProfileName)' == ''">bloodmomentum</ProfileName>
+    <!-- r2modman profile used for references and for auto-deploying the built DLL -->
+    <ProfileDir Condition="'$(ProfileDir)' == ''">$(APPDATA)\r2modmanPlus-local\RiskOfRain2\profiles\$(ProfileName)\BepInEx</ProfileDir>
+    <PluginsDir>$(ProfileDir)\plugins</PluginsDir>
+    <!-- Real game DLLs, so private members fail at compile time instead of in game -->
+    <GameManaged Condition="'$(GameManaged)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Risk of Rain 2\Risk of Rain 2_Data\Managed</GameManaged>
+    <ThunderstoreTeam>marshmelto</ThunderstoreTeam>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" IncludeAssets="compile" />
+  </ItemGroup>
+
+  <!-- Icons ship inside the DLL; regenerate them with tools/make_icons.py -->
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\*.png" LogicalName="%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="RoR2">
+      <HintPath>$(GameManaged)\RoR2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.Addressables">
+      <HintPath>$(GameManaged)\Unity.Addressables.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.ResourceManager">
+      <HintPath>$(GameManaged)\Unity.ResourceManager.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="com.unity.multiplayer-hlapi.Runtime">
+      <HintPath>$(GameManaged)\com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="HGCSharpUtils">
+      <HintPath>$(GameManaged)\HGCSharpUtils.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="LegacyResourcesAPI">
+      <HintPath>$(GameManaged)\LegacyResourcesAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>$(ProfileDir)\core\BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="R2API.Core">
+      <HintPath>$(PluginsDir)\RiskofThunder-R2API_Core\R2API.Core\R2API.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="R2API.ContentManagement">
+      <HintPath>$(PluginsDir)\RiskofThunder-R2API_ContentManagement\R2API.ContentManagement\R2API.ContentManagement.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="R2API.Items">
+      <HintPath>$(PluginsDir)\RiskofThunder-R2API_Items\R2API.Items\R2API.Items.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="R2API.Language">
+      <HintPath>$(PluginsDir)\RiskofThunder-R2API_Language\R2API.Language\R2API.Language.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="R2API.RecalculateStats">
+      <HintPath>$(PluginsDir)\RiskofThunder-R2API_RecalculateStats\R2API.RecalculateStats\R2API.RecalculateStats.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Copy the built mod into the r2modman profile so "Start modded" picks it up -->
+  <Target Name="DeployToProfile" AfterTargets="Build">
+    <MakeDir Directories="$(PluginsDir)\AnkletOfBloodlust" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(PluginsDir)\AnkletOfBloodlust" />
+  </Target>
+
+  <!-- Release builds also produce the zip to upload to Thunderstore, in dist/ -->
+  <Target Name="PackageThunderstore" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <PropertyGroup>
+      <PackageStaging>$(MSBuildProjectDirectory)\obj\thunderstore</PackageStaging>
+      <PackageZip>$(MSBuildProjectDirectory)\dist\$(ThunderstoreTeam)-$(AssemblyName)-$(Version).zip</PackageZip>
+    </PropertyGroup>
+    <RemoveDir Directories="$(PackageStaging)" />
+    <Copy SourceFiles="@(ThunderstoreFile);$(TargetPath)" DestinationFolder="$(PackageStaging)" />
+    <MakeDir Directories="$(MSBuildProjectDirectory)\dist" />
+    <ZipDirectory SourceDirectory="$(PackageStaging)" DestinationFile="$(PackageZip)" Overwrite="true" />
+    <Message Importance="high" Text="Thunderstore package: $(PackageZip)" />
+  </Target>
+
+  <ItemGroup>
+    <ThunderstoreFile Include="Thunderstore\manifest.json;Thunderstore\README.md;Thunderstore\CHANGELOG.md;Thunderstore\icon.png" />
+  </ItemGroup>
+
+</Project>
