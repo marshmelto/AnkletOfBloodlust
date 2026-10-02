@@ -17,7 +17,7 @@ namespace AnkletOfBloodlust
     {
         public const string PluginGUID = "prana.AnkletOfBloodlust";
         public const string PluginName = "AnkletOfBloodlust";
-        public const string PluginVersion = "1.0.0";
+        public const string PluginVersion = "1.0.1";
 
         // Change these to rename the item in game
         private const string ItemName = "Anklet of Bloodlust";

@@ -19,7 +19,6 @@ Adds a new lunar item to Risk of Rain 2.
 	</tr>
 </table>
 
-*The item icon is a placeholder and will be replaced soon.*
 
 ## Dependencies
 - [BepInExPack](https://thunderstore.io/c/riskofrain2/p/bbepis/BepInExPack/)

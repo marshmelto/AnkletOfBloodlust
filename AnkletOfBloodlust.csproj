@@ -6,7 +6,7 @@
     <AssemblyName>AnkletOfBloodlust</AssemblyName>
     <RootNamespace>AnkletOfBloodlust</RootNamespace>
     <!-- Keep in sync with PluginVersion in AnkletOfBloodlustPlugin.cs and Thunderstore/manifest.json -->
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     <!-- Override either path on the command line, e.g. dotnet build -p:ProfileName=Default -->
