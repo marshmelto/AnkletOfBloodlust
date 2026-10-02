@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+- Updated the anklet's 3D model.
+
 ## 1.0.1
 
 - New item icon.

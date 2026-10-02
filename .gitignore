@@ -4,3 +4,6 @@ dist/
 .vs/
 .vscode/
 *.user
+
+# Built AssetBundle (made in the Unity project: Anklet > Build AssetBundle)
+Assets/ankletofbloodlust

@@ -17,7 +17,7 @@ namespace AnkletOfBloodlust
     {
         public const string PluginGUID = "prana.AnkletOfBloodlust";
         public const string PluginName = "AnkletOfBloodlust";
-        public const string PluginVersion = "1.0.1";
+        public const string PluginVersion = "1.1.0";
 
         // Change these to rename the item in game
         private const string ItemName = "Anklet of Bloodlust";
@@ -35,6 +35,9 @@ namespace AnkletOfBloodlust
 
         public void Awake()
         {
+            Log.Init(Logger);
+            AssetManager.Init(Info.Location);
+
             BindConfig();
             CreateBuff();
             CreateItem();
@@ -43,7 +46,7 @@ namespace AnkletOfBloodlust
             GlobalEventManager.onCharacterDeathGlobal += OnCharacterDeath;
             GlobalEventManager.onServerDamageDealt += OnServerDamageDealt;
             RecalculateStatsAPI.GetStatCoefficients += OnGetStatCoefficients;
-            RoR2Application.onLoad += () => ItemDisplays.ApplyDisplayRules(itemDef, Logger);
+            RoR2Application.onLoad += () => ItemDisplays.ApplyDisplayRules(itemDef);
         }
 
         private void BindConfig()
@@ -72,7 +75,7 @@ namespace AnkletOfBloodlust
             bloodlustBuff.isCooldown = false;
             bloodlustBuff.isHidden = false;
             // White silhouette; the game tints it with buffColor
-            bloodlustBuff.iconSprite = AnkletAssets.LoadSprite("texBloodlustBuffIcon.png");
+            bloodlustBuff.iconSprite = AssetManager.LoadSprite("texBloodlustBuffIcon.png");
             ContentAddition.AddBuffDef(bloodlustBuff);
         }
 
@@ -89,12 +92,21 @@ namespace AnkletOfBloodlust
             itemDef.hidden = false;
             itemDef.tags = new[] { ItemTag.Damage, ItemTag.Utility };
 
-#pragma warning disable CS0618 // pickupModelPrefab is kept for mods
-            itemDef.pickupModelPrefab = AnkletAssets.CreatePickupModel();
-#pragma warning restore CS0618
-            itemDef.pickupIconSprite = AnkletAssets.LoadSprite("texAnkletOfBloodlustIcon.png");
+            GameObject prefab = AssetManager.LoadPrefab("AnkletOfBloodlust.prefab");
 
-            ItemAPI.Add(new CustomItem(itemDef, ItemDisplays.Create(AnkletAssets.CreateDisplayModel())));
+            // Camera framing for the logbook
+            ModelPanelParameters panel = prefab.AddComponent<ModelPanelParameters>();
+            panel.focusPointTransform = prefab.transform;
+            panel.cameraPositionTransform = prefab.transform;
+            panel.minDistance = 1.2f;
+            panel.maxDistance = 4f;
+
+#pragma warning disable CS0618 // pickupModelPrefab is kept for mods
+            itemDef.pickupModelPrefab = prefab;
+#pragma warning restore CS0618
+            itemDef.pickupIconSprite = AssetManager.LoadSprite("texAnkletOfBloodlustIcon.png");
+
+            ItemAPI.Add(new CustomItem(itemDef, ItemDisplays.Create(prefab)));
         }
 
         // ItemDef.tier's setter looks the tier up in ItemTierCatalog, which is still empty while mods
@@ -140,8 +152,6 @@ namespace AnkletOfBloodlust
 
         private static void OnServerDamageDealt(DamageReport report)
         {
-            if (!NetworkServer.active) return;
-
             CharacterBody victim = report.victimBody;
             if (!victim || report.damageDealt <= 0f) return;
             if (report.attackerBody == victim) return; // ignore self-damage
@@ -150,8 +160,7 @@ namespace AnkletOfBloodlust
             if (stacks <= 0) return;
 
             // Chip damage and small DoT ticks don't cost stacks
-            HealthComponent health = victim.healthComponent;
-            if (health && report.damageDealt < health.fullCombinedHealth * minHitFraction.Value) return;
+            if (report.damageDealt < victim.healthComponent.fullCombinedHealth * minHitFraction.Value) return;
 
             int lost = Mathf.CeilToInt(stacks * Mathf.Clamp01(stacksLostOnHit.Value));
             victim.SetBuffCount(bloodlustBuff.buffIndex, stacks - lost);
